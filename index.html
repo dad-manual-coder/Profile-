@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ousman Sankareh | Social Profile Card</title>
+    <meta name="description" content="A simple nteractive social media profile card for Ousman Sankareh, built with pure HTML, CSS, and JavaScript.">
+    <meta name="keywords" content="frontend developer, interactive ui, javascript, css, html, web developer">
+    <link rel="icon" href="https://img.icons8.com/fluent/48/000000/user-male-circle.png" type="image/x-icon">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* style.css */
+
+/* --- 1. Root Variables & Basic Setup --- */
+:root {
+    --font-main: 'Inter', sans-serif;
+    
+    /* Light Theme */
+    --bg-color: #f0f2f5;
+    --card-bg-color: rgba(255, 255, 255, 0.6);
+    --text-color: #1c1e21;
+    --text-color-secondary: #65676b;
+    --border-color: rgba(0, 0, 0, 0.1);
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --primary-color: #1877f2;
+    --primary-hover-color: #166fe5;
+    --button-bg: #e4e6eb;
+    --button-hover-bg: #d8dbdf;
+    --success-color: #42b72a;
+    --success-hover-color: #36a420;
+    --progress-bar-bg: #e9e9e9;
+
+    /* Spacing & Sizing */
+    --card-width: clamp(320px, 90vw, 450px);
+    --border-radius: 20px;
+    --spacing: 16px;
+}
+
+[data-theme="dark"] {
+    --bg-color: #121212;
+    --card-bg-color: rgba(30, 30, 30, 0.65);
+    --text-color: #e4e6eb;
+    --text-color-secondary: #b0b3b8;
+    --border-color: rgba(255, 255, 255, 0.15);
+    --shadow-color: rgba(0, 0, 0, 0.4);
+    --primary-color: #2689f7;
+    --primary-hover-color: #409aff;
+    --button-bg: #3a3b3c;
+    --button-hover-bg: #4e4f50;
+    --success-color: #42b72a;
+    --success-hover-color: #36a420;
+    --progress-bar-bg: #303030;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    transition: background-color 0.4s ease, color 0.4s ease;
+    overflow-x: hidden;
+    background-image: linear-gradient(135deg, var(--primary-color) 0%, var(--bg-color) 30%, var(--bg-color) 70%, var(--success-color) 100%);
+}
+
+/* --- 2. Loading Spinner --- */
+.loading-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    opacity: 1;
+    transition: opacity 0.5s ease, visibility 0.5s;
+    visibility: visible;
+}
+
+.loading-spinner:not(.active) {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--border-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* --- 3. Profile Card Layout & Glassmorphism --- */
+.profile-card {
+    width: var(--card-width);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 10px 30px -10px var(--shadow-color), 0 5px 15px -15px var(--shadow-color);
+    position: relative;
+    transition: transform 0.1s ease;
+    transform-style: preserve-3d;
+}
+
+.card-background {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: var(--card-bg-color);
+    backdrop-filter: blur(25px) saturate(150%);
+    -webkit-backdrop-filter: blur(25px) saturate(150%);
+    z-index: 1;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+}
+
+.card-content {
+    position: relative;
+    z-index: 2;
+    padding: var(--spacing);
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+/* --- 4. Custom Scrollbar --- */
+.card-content::-webkit-scrollbar {
+    width: 8px;
+}
+.card-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+.card-content::-webkit-scrollbar-thumb {
+    background: var(--button-bg);
+    border-radius: 4px;
+}
+.card-content::-webkit-scrollbar-thumb:hover {
+    background: var(--button-hover-bg);
+}
+
+/* --- 5. Headers (Utility & Profile) --- */
+.utility-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing);
+    font-size: 0.8rem;
+}
+.utility-header .header-left, .utility-header .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.language-switcher select {
+    background: transparent;
+    border: none;
+    color: var(--text-color-secondary);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+.session-timer {
+    color: var(--text-color-secondary);
+}
+
+.profile-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--spacing);
+    margin-bottom: var(--spacing);
+}
+
+.profile-picture-container {
+    position: relative;
+    grid-row: 1 / span 2;
+}
+.profile-pic {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 3px solid var(--card-bg-color);
+    box-shadow: 0 0 15px var(--shadow-color);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    z-index: 5;
+    position: relative;
+}
+.profile-pic:hover {
+    transform: scale(1.05);
+}
+
+/* --- 6. Interactive Elements & Animations --- */
+.story-ring {
+    position: absolute;
+    top: -5px; left: -5px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    background-image: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
+    z-index: 4;
+    animation: rotate-glow 5s linear infinite;
+}
+@keyframes rotate-glow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.online-indicator {
+    position: absolute;
+    bottom: 5px; right: 5px;
+    width: 15px; height: 15px;
+    background-color: #31a24c;
+    border-radius: 50%;
+    border: 2px solid var(--card-bg-color);
+    z-index: 6;
+}
+
+.upload-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 0.8rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 7;
+}
+.upload-overlay.active {
+    opacity: 1;
+}
+
+.profile-info {
+    grid-column: 2 / 4;
+}
+.full-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.mood-status {
+    font-size: 1.2rem;
+    animation: bounce-in 0.5s ease;
+}
+@keyframes bounce-in {
+    0% { transform: scale(0.5); opacity: 0; }
+    70% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.username {
+    color: var(--text-color-secondary);
+    font-weight: 500;
+}
+.badges {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+}
+.badge {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-weight: 600;
+    color: white;
+}
+.badge.verified { background-color: var(--primary-color); }
+.badge.pro { background-color: #962fbf; }
+.badge.creator { background-color: #d62976; }
+
+/* --- 7. Buttons (Follow, Message, etc.) --- */
+.profile-actions {
+    grid-column: 2 / 4;
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+.message-btn, .follow-btn {
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+.message-btn {
+    background-color: var(--button-bg);
+    color: var(--text-color);
+}
+.message-btn:hover { background-color: var(--button-hover-bg); }
+.follow-btn {
+    background-color: var(--primary-color);
+    color: white;
+}
+.follow-btn:hover { background-color: var(--primary-hover-color); }
+.follow-btn.following {
+    background-color: var(--success-color);
+}
+.follow-btn.following:hover { background-color: var(--success-hover-color); }
+.follow-btn.loading {
+    pointer-events: none;
+}
+.follow-btn.loading .loader {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #fff;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    animation: spin 0.75s linear infinite;
+}
+
+/* Ripple Effect */
+.action-btn::after, .message-btn::after, .follow-btn::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    pointer-events: none;
+}
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* --- 8. Stats, Bio, and Other Sections --- */
+.profile-stats {
+    display: flex;
+    justify-content: space-around;
+    padding: var(--spacing) 0;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: var(--spacing);
+}
+.stat {
+    text-align: center;
+}
+.stat strong {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+.stat span {
+    font-size: 0.8rem;
+    color: var(--text-color-secondary);
+}
+.profile-bio {
+    margin-bottom: var(--spacing);
+}
+.bio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.bio-header h2 { font-size: 1.1rem; }
+.edit-btn {
+    color: var(--text-color-secondary);
+}
+#bio-text {
+    line-height: 1.5;
+    color: var(--text-color-secondary);
+    min-height: 40px; /* For typewriter */
+}
+#bio-text[contenteditable="true"] {
+    outline: 2px dashed var(--primary-color);
+    padding: 8px;
+    border-radius: 6px;
+    background: var(--button-bg);
+}
+#bio-text::after { /* Typewriter cursor */
+    content: '|';
+    animation: blink 0.7s infinite;
+    opacity: 0;
+}
+#bio-text.typing-done::after {
+    display: none;
+}
+@keyframes blink { 50% { opacity: 1; } }
+
+.bio-details { margin-top: 12px; font-size: 0.9rem; color: var(--text-color-secondary); }
+.bio-details p { margin-bottom: 4px; }
+.bio-details a { color: var(--primary-color); text-decoration: none; }
+.bio-details a:hover { text-decoration: underline; }
+#local-time { font-style: italic; }
+
+.tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.tags span {
+    background: var(--button-bg);
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: var(--spacing);
+}
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    background: var(--button-bg);
+    color: var(--text-color);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+}
+.action-btn:hover { background: var(--button-hover-bg); }
+.action-btn svg { width: 18px; height: 18px; }
+
+/* --- 9. Tab System --- */
+.tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: var(--spacing);
+}
+.tab-link {
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    position: relative;
+    transition: color 0.3s;
+}
+.tab-link.active {
+    color: var(--primary-color);
+}
+.tab-link::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--primary-color);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+.tab-link.active::after {
+    transform: scaleX(1);
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.5s ease;
+}
+.tab-content.active {
+    display: block;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.content-section { margin-bottom: var(--spacing); }
+.content-section h3 { font-size: 1rem; margin-bottom: 10px; }
+
+/* --- 10. Progress Bars & Skills --- */
+.progress-bar-container {
+    background: var(--progress-bar-bg);
+    border-radius: 10px;
+    overflow: hidden;
+    height: 20px;
+}
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+    width: 0;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.skill { margin-bottom: 8px; }
+.skill span {
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+    display: block;
+}
+.skill .progress-bar-container { height: 10px; }
+
+/* --- 11. Media Gallery & Timeline --- */
+.media-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+}
+.media-item {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.media-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+.media-item:hover img {
+    transform: scale(1.1);
+}
+.media-item::after {
+    content: '👁️';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.5rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.media-item:hover::after {
+    opacity: 1;
+}
+.activity-timeline { list-style: none; }
+.activity-timeline li {
+    padding: 10px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+}
+.activity-timeline li:last-child { border-bottom: none; }
+
+/* --- 12. Contact Form & Footer --- */
+.contact-form { display: flex; flex-direction: column; gap: 12px; }
+.contact-form input, .contact-form textarea {
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--button-bg);
+    border-radius: 8px;
+    color: var(--text-color);
+    font-family: var(--font-main);
+    font-size: 0.9rem;
+}
+.contact-form input:focus, .contact-form textarea:focus {
+    outline: 2px solid var(--primary-color);
+    border-color: transparent;
+}
+.contact-form textarea { resize: vertical; min-height: 80px; }
+.card-footer {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 10px;
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+    border-top: 1px solid var(--border-color);
+}
+
+/* --- 13. Modals --- */
+.modal-open {
+    overflow: hidden;
+}
+.modal-open .profile-card {
+    filter: blur(5px);
+    transform: scale(0.98);
+}
+.modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    backdrop-filter: blur(5px);
+}
+.modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+.modal-content {
+    background: var(--card-bg-color);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    position: relative;
+    max-width: 90vw;
+    animation: zoomIn 0.3s ease;
+}
+@keyframes zoomIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px; right: 20px;
+    font-size: 2rem;
+    color: var(--text-color-secondary);
+    cursor: pointer;
+    line-height: 1;
+}
+.close-btn:hover { color: var(--text-color); }
+
+/* Specific Modals */
+#profile-pic-modal img {
+    max-width: 80vw;
+    max-height: 80vh;
+    border-radius: 10px;
+}
+.story-content {
+    padding: 0;
+    overflow: hidden;
+    width: 350px;
+    height: 600px;
+}
+.story-content video { width: 100%; height: 100%; object-fit: cover; }
+.chat-interface {
+    width: clamp(300px, 90vw, 400px);
+    display: flex;
+    flex-direction: column;
+    height: 60vh;
+}
+.chat-header {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+.chat-body { flex-grow: 1; overflow-y: auto; padding-right: 10px; }
+.message {
+    padding: 8px 12px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    max-width: 70%;
+    line-height: 1.4;
+}
+.message.received {
+    background: var(--button-bg);
+    border-top-left-radius: 0;
+}
+.typing-indicator span {
+    height: 8px; width: 8px;
+    border-radius: 50%;
+    background-color: var(--text-color-secondary);
+    display: inline-block;
+    animation: typing 1s infinite ease-in-out;
+}
+.typing-indicator span:nth-of-type(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-of-type(3) { animation-delay: 0.4s; }
+@keyframes typing {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+.chat-footer { display: flex; gap: 10px; padding-top: 10px; border-top: 1px solid var(--border-color); }
+.chat-footer input { flex-grow: 1; border: none; background: var(--button-hover-bg); padding: 10px; border-radius: 15px; color: var(--text-color); }
+.chat-footer button { border: none; background: var(--primary-color); color: white; padding: 0 15px; border-radius: 15px; cursor: pointer; }
+
+.lightbox { background: rgba(0,0,0,0.85); }
+.lightbox-content { max-width: 90vw; max-height: 90vh; }
+.lightbox-close { top: 20px; right: 35px; color: white; font-size: 3rem; }
+
+/* --- 14. Theme Switcher & Notifications --- */
+.theme-switcher .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+.theme-switcher input { opacity: 0; width: 0; height: 0; }
+.slider {
+    position: absolute; cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--button-bg);
+    transition: 0.4s; border-radius: 24px;
+}
+.slider:before {
+    position: absolute; content: "";
+    height: 18px; width: 18px;
+    left: 3px; bottom: 3px;
+    background-color: white;
+    transition: 0.4s; border-radius: 50%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23f5c32c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='5'%3E%3C/circle%3E%3Cline x1='12' y1='1' x2='12' y2='3'%3E%3C/line%3E%3Cline x1='12' y1='21' x2='12' y2='23'%3E%3C/line%3E%3Cline x1='4.22' y1='4.22' x2='5.64' y2='5.64'%3E%3C/line%3E%3Cline x1='18.36' y1='18.36' x2='19.78' y2='19.78'%3E%3C/line%3E%3Cline x1='1' y1='12' x2='3' y2='12'%3E%3C/line%3E%3Cline x1='21' y1='12' x2='23' y2='12'%3E%3C/line%3E%3Cline x1='4.22' y1='19.78' x2='5.64' y2='18.36'%3E%3C/line%3E%3Cline x1='18.36' y1='5.64' x2='19.78' y2='4.22'%3E%3C/line%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+input:checked + .slider { background-color: var(--primary-color); }
+input:checked + .slider:before {
+    transform: translateX(20px);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z'%3E%3C/path%3E%3C/svg%3E");
+}
+
+.notification-center { position: relative; }
+.icon-btn { background: none; border: none; color: var(--text-color-secondary); cursor: pointer; padding: 4px; }
+.notification-dot {
+    position: absolute; top: 0; right: 0;
+    width: 8px; height: 8px;
+    background-color: #fa383e;
+    border-radius: 50%;
+    border: 1px solid var(--card-bg-color);
+    display: none;
+}
+.notification-dot.active { display: block; }
+.notification-panel {
+    position: absolute;
+    top: 130%; right: 0;
+    width: 320px;
+    background: var(--card-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 5px 20px var(--shadow-color);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    z-index: 100;
+}
+.notification-panel.active { opacity: 1; visibility: visible; transform: translateY(0); }
+.notification-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 15px; border-bottom: 1px solid var(--border-color);
+}
+.notification-header h4 { font-size: 0.9rem; }
+.notification-header button { font-size: 0.75rem; color: var(--primary-color); background: none; 
+    </style>
+</head>
+<body>
+
+    <div class="loading-spinner active" id="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+    
+    <div class="profile-card" id="profile-card">
+        <div class="card-background"></div>
+        <div class="card-content">
+
+            <header class="utility-header">
+                <div class="header-left">
+                    <div class="language-switcher">
+                        <select id="language-select" aria-label="Select Language">
+                            <option value="en">EN</option>
+                            <option value="fr">FR</option>
+                            <option value="es">ES</option>
+                        </select>
+                    </div>
+                     <div class="session-timer">
+                        <span data-lang-key="session">Session</span>: <span id="session-time">00:00</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="notification-center">
+                        <button class="icon-btn" id="notification-bell" aria-label="Toggle Notifications">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                            <span class="notification-dot" id="notification-dot"></span>
+                        </button>
+                        <div class="notification-panel" id="notification-panel">
+                            <div class="notification-header">
+                                <h4 data-lang-key="notifications">Notifications</h4>
+                                <button id="mark-all-read" data-lang-key="markAllRead">Mark all as read</button>
+                            </div>
+                            <ul id="notification-list">
+                                </ul>
+                        </div>
+                    </div>
+                    <div class="theme-switcher">
+                        <label class="switch" aria-label="Toggle dark mode">
+                            <input type="checkbox" id="theme-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </header>
+
+            <header class="profile-header">
+                <div class="profile-picture-container">
+                    <img src="https://raw.githubusercontent.com/dad-manual-coder/dad/refs/heads/main/img.jpg" alt="Ousman Sankareh's Profile Picture, AKA Manual Coder" id="profile-pic-img" class="profile-pic">
+                    <div class="story-ring"></div>
+                    <div class="online-indicator" title="Online"></div>
+                    <div class="upload-overlay" id="upload-overlay">
+                        <span data-lang-key="dropImage">Drop image to upload</span>
+                    </div>
+                </div>
+
+                <div class="profile-info">
+                    <h1 class="full-name">Ousman Sankareh <span id="mood-status" class="mood-status">😊</span></h1>
+                    <p class="username">@ousman_sankareh</p>
+                    <div class="badges">
+                        <span class="badge verified" data-tooltip="Verified User">✔</span>
+                        <span class="badge pro" data-tooltip="Pro Member">PRO</span>
+                        <span class="badge creator" data-tooltip="Top Creator">★</span>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <button class="message-btn" id="message-btn" data-lang-key="message">Message</button>
+                  <button class="follow-btn" id="follow-btn" data-lang-key="follow">Follow</button>
+
+<script>
+  document.getElementById("follow-btn").addEventListener("click", function () {
+    this.innerText = "Follow";
+    this.disabled = true;
+
+    // Wait a moment, then redirect
+    setTimeout(() => {
+      window.location.href = "https://www.sololearn.com/profile/31020268/?ref=app";
+    }, 1000); 
+  });
+</script>
+                </div>
+            </header>
+
+            <section class="profile-stats">
+                <div class="stat">
+                    <strong id="posts-count">256</strong><span data-lang-key="posts">Posts</span>
+                </div>
+                <div class="stat">
+                    <strong id="followers-count">57</strong><span data-lang-key="followers">Followers</span>
+                </div>
+                <div class="stat">
+                    <strong id="following-count">57</strong><span data-lang-key="following">Following</span>
+                </div>
+            </section>
+            
+            <section class="profile-bio">
+                <div class="bio-header">
+                    <h2 data-lang-key="bio">Bio</h2>
+                    <button class="icon-btn edit-btn" id="edit-bio-btn" aria-label="Edit Bio" data-tooltip="Edit Bio">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                    </button>
+                </div>
+                <p id="bio-text"></p><br>
+                <div class="bio-details">
+                    <p>📍 <span id="location-text">The Smiling cost of Africa</span> <span id="weather-widget">☀️ 32°C</span></p>
+                    <p>🔗 <a href="https://dad-azcq.vercel.app" target="_blank" id="website-link">ousmansankareh.com</a></p>
+                    <p>🕒 <span id="local-time"></span></p>
+                </div>
+                <div class="tags">
+                    <span>#developer</span> <span>#ai</span> <span>#design</span> <span>#music</span>
+                </div>
+            </section>
+            
+             <section class="action-buttons">
+                <button class="action-btn" id="share-profile-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><path d="M16 6l-4-4-4 4"></path><path d="M12 2v13"></path></svg><span data-lang-key="shareProfile">Share Profile</span></button>
+                <a href="#" class="action-btn" id="download-cv-btn" download><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><polyline points="9 15 12 18 15 15"></polyline></svg><span data-lang-key="downloadCv">Download CV</span></a>
+            </section>
+
+
+            <nav class="tabs">
+                <button class="tab-link active" data-tab="about" data-lang-key="about">About</button>
+                <button class="tab-link" data-tab="media" data-lang-key="media">Media</button>
+                <button class="tab-link" data-tab="timeline" data-lang-key="timeline">Timeline</button>
+                <button class="tab-link" data-tab="contact" data-lang-key="contact">Contact</button>
+            </nav>
+
+            <div class="tab-content-wrapper">
+                <div id="about" class="tab-content active">
+                    <div class="content-section">
+                        <h3 data-lang-key="profileCompletion">Profile Completion</h3>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="profile-completion-bar"><span>85%</span></div>
+                        </div>
+                    </div>
+                    <div class="content-section">
+                        <h3 data-lang-key="skills">Skills</h3>
+                        <div class="skill">
+                            <span>Bac-kend Programming</span>
+                            <div class="progress-bar-container"><div class="progress-bar" style="width: 80%;"></div></div>
+                        </div>
+                         <div class="skill">
+                            <span>Web Development</span>
+                            <div class="progress-bar-container"><div class="progress-bar" style="width: 70%;"></div></div>
+                        </div>
+                         <div class="skill">
+                            <span>Data Analysis</span>
+                            <div class="progress-bar-container"><div class="progress-bar" style="width: 66%;"></div></div>
+                        </div>
+                    </div>
+                    <div class="content-section">
+                        <h3 data-lang-key="qrCode">QR Code</h3>
+                        <div id="qrcode" title="Scan to view profile"></div>
+                    </div>
+                </div>
+
+                <div id="media" class="tab-content">
+                    <div class="media-gallery">
+                        <div class="media-item"><img src="top_sololearner.jpg" alt="Gallery Image 1"></div>
+                        <div class="media-item"><img src="i_love_cpp.jpg" alt="Gallery Image 2"></div>
+                        <div class="media-item"><img src="network_security.jpg" alt="Gallery Image 3"></div>
+                        <div class="media-item"><img src="coffee.jpg" alt="Gallery Image 4"></div>
+                        <div class="media-item"><img src="java_course.jpg" alt="Gallery Image 5"></div>
+                        <div class="media-item"><img src="git_commands.jpg" alt="Gallery Image 6"></div>
+                    </div>
+                </div>
+
+                <div id="timeline" class="tab-content">
+                    <ul class="activity-timeline" id="activity-timeline">
+                        </ul>
+                </div>
+
+                <div id="contact" class="tab-content">
+                    <form class="contact-form">
+                        <input type="text" placeholder="Your Name" data-lang-key="yourName" required>
+                        <input type="email" placeholder="Your Email" data-lang-key="yourEmail" required>
+                        <textarea placeholder="Your Message..." data-lang-key="yourMessage" required></textarea>
+                        <button type="submit" class="action-btn" data-lang-key="sendMessage">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+             <p>&copy; 2025 Ousman Sankareh. <span data-lang-key="allRightsReserved">All Rights Reserved.</span></p>
+        </div>
+    </div>
+    
+    <div class="modal" id="profile-pic-modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <img src="https://media.licdn.com/dms/image/D4E03AQE41OEV1i9bQw/profile-displayphoto-shrink_400_400/0/1718055615705?e=1726099200&v=beta&t=Hjk0sXv3_4gTGyf0y4xWdZT7uWc6zXy7s-9N3B00_D4" alt="Profile Picture Full View">
+        </div>
+    </div>
+
+    <div class="modal" id="story-modal">
+        <div class="modal-content story-content">
+            <span class="close-btn">&times;</span>
+            <video src="https://assets.mixkit.co/videos/preview/mixkit-programmer-writing-code-on-a-laptop-in-a-dark-room-4309-large.mp4" autoplay muted loop playsinline></video>
+        </div>
+    </div>
+    
+    <div class="modal" id="message-modal">
+        <div class="modal-content chat-interface">
+             <div class="chat-header">
+                <h3>Chat with Ousman</h3>
+                <span class="close-btn">&times;</span>
+            </div>
+            <div class="chat-body">
+                <div class="message received">Hey there! How can I help you?</div>
+                <div class="typing-indicator">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+            <div class="chat-footer">
+                <input type="text" placeholder="Type a message...">
+                <button>Send</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal lightbox" id="lightbox-modal">
+        <span class="close-btn lightbox-close">&times;</span>
+        <img class="lightbox-content" id="lightbox-img">
+    </div>
+
+    <div id="konami-surprise">🚀</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/davidshimjs-qrcodejs@0.0.2/qrcode.min.js"></script>
+    
+    <script src="script.js"></script>
+    <script>
+        /* script.js */
+
+document.addEventListener('DOMContentLoaded', () => {
+    // --- 1. Element Selectors ---
+    const getEl = (id) => document.getElementById(id);
+    const query = (selector) => document.querySelector(selector);
+    const queryAll = (selector) => document.querySelectorAll(selector);
+
+    const profileCard = getEl('profile-card');
+    const loadingSpinner = getEl('loading-spinner');
+    
+    // Theme
+    const themeToggle = getEl('theme-toggle');
+    
+    // Profile Info
+    const followBtn = getEl('follow-btn');
+    const followersCountEl = getEl('followers-count');
+    const bioTextEl = getEl('bio-text');
+    const editBioBtn = getEl('edit-bio-btn');
+    const profilePic = getEl('profile-pic-img');
+    const uploadOverlay = getEl('upload-overlay');
+    const moodStatusEl = getEl('mood-status');
+    const storyRing = query('.story-ring');
+
+    // Modals
+    const profilePicModal = getEl('profile-pic-modal');
+    const storyModal = getEl('story-modal');
+    const messageModal = getEl('message-modal');
+    const lightboxModal = getEl('lightbox-modal');
+    const messageBtn = getEl('message-btn');
+
+    // Tabs
+    const tabs = queryAll('.tab-link');
+    const tabContents = queryAll('.tab-content');
+
+    // Notifications
+    const notificationBell = getEl('notification-bell');
+    const notificationPanel = getEl('notification-panel');
+    const notificationDot = getEl('notification-dot');
+    const notificationList = getEl('notification-list');
+    const markAllReadBtn = getEl('mark-all-read');
+
+    // Timers & Clocks
+    const sessionTimeEl = getEl('session-time');
+    const localTimeEl = getEl('local-time');
+
+    // Actions
+    const shareProfileBtn = getEl('share-profile-btn');
+    const progressBar = getEl('profile-completion-bar');
+    
+    // Language
+    const languageSelect = getEl('language-select');
+
+    // --- 2. State Management ---
+    let state = {
+        isFollowing: false,
+        followers: 57,
+        notifications: [],
+        sessionStartTime: new Date(),
+        konamiCode: ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'],
+        konamiIndex: 0
+    };
+
+    const translations = {
+        en: {
+            follow: 'Follow',
+            following: 'Following',
+            message: 'Message',
+            posts: 'Posts',
+            followers: 'Followers',
+            following: 'Following',
+            bio: 'Bio',
+            about: 'About',
+            media: 'Media',
+            timeline: 'Timeline',
+            contact: 'Contact',
+            profileCompletion: 'Profile Completion',
+            skills: 'Skills',
+            qrCode: 'QR Code',
+            shareProfile: 'Share Profile',
+            downloadCv: 'Download CV',
+            yourName: 'Your Name',
+            yourEmail: 'Your Email',
+            yourMessage: 'Your Message...',
+            sendMessage: 'Send Message',
+            notifications: 'Notifications',
+            markAllRead: 'Mark all as read',
+            session: 'Session',
+            dropImage: 'Drop image to upload',
+            allRightsReserved: 'All Rights Reserved.'
+        },
+        fr: {
+            follow: 'Suivre',
+            following: 'Abonné',
+            message: 'Message',
+            posts: 'Publications',
+            followers: 'Abonnés',
+            following: 'Abonnements',
+            bio: 'Bio',
+            about: 'À propos',
+            media: 'Média',
+            timeline: 'Chronologie',
+            contact: 'Contact',
+            profileCompletion: 'Complétion du profil',
+            skills: 'Compétences',
+            qrCode: 'Code QR',
+            shareProfile: 'Partager le profil',
+            downloadCv: 'Télécharger le CV',
+            yourName: 'Votre Nom',
+            yourEmail: 'Votre Email',
+            yourMessage: 'Votre Message...',
+            sendMessage: 'Envoyer',
+            notifications: 'Notifications',
+            markAllRead: 'Tout marquer comme lu',
+            session: 'Session',
+            dropImage: 'Déposez une image',
+            allRightsReserved: 'Tous droits réservés.'
+        },
+        es: {
+            follow: 'Seguir',
+            following: 'Siguiendo',
+            message: 'Mensaje',
+            posts: 'Publicaciones',
+            followers: 'Seguidores',
+            following: 'Siguiendo',
+            bio: 'Biografía',
+            about: 'Acerca de',
+            media: 'Medios',
+            timeline: 'Cronología',
+            contact: 'Contacto',
+            profileCompletion: 'Perfil Completo',
+            skills: 'Habilidades',
+            qrCode: 'Código QR',
+            shareProfile: 'Compartir Perfil',
+            downloadCv: 'Descargar CV',
+            yourName: 'Tu Nombre',
+            yourEmail: 'Tu Email',
+            yourMessage: 'Tu Mensaje...',
+            sendMessage: 'Enviar Mensaje',
+            notifications: 'Notificaciones',
+            markAllRead: 'Marcar todo como leído',
+            session: 'Sesión',
+            dropImage: 'Suelta la imagen',
+            allRightsReserved: 'Todos los derechos reservados.'
+        }
+    };
+    
+    // --- 3. Initializer Function ---
+    function init() {
+        // Hide loader
+        setTimeout(() => {
+            loadingSpinner.classList.remove('active');
+        }, 1000);
+
+        setupEventListeners();
+        loadSettings();
+        startTimers();
+        typewriterEffect("Dumb Backend Engineer & AI Enthusiast. Turning complex problems into beautiful, intuitive designs. Let's build something amazing together.", bioTextEl);
+        generateQRCode();
+        addInitialNotifications();
+        updateTimeline();
+        
+        // Animate progress bar on load
+        setTimeout(() => progressBar.style.width = progressBar.textContent, 200);
+        
+        // Trigger count-up animations
+        countUp(getEl('posts-count'), 256);
+        countUp(followersCountEl, state.followers);
+        countUp(getEl('following-count'), 57);
+    }
+
+    // --- 4. Event Listeners Setup ---
+    function setupEventListeners() {
+        themeToggle.addEventListener('change', toggleTheme);
+        followBtn.addEventListener('click', handleFollow);
+        
+        profilePic.addEventListener('click', () => openModal(profilePicModal));
+        storyRing.addEventListener('click', () => openModal(storyModal));
+        messageBtn.addEventListener('click', () => openModal(messageModal));
+
+        queryAll('.modal .close-btn').forEach(btn => {
+            btn.addEventListener('click', () => closeModal(btn.closest('.modal')));
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape") {
+                queryAll('.modal.active').forEach(closeModal);
+            }
+        });
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', switchTab);
+        });
+
+        editBioBtn.addEventListener('click', toggleBioEdit);
+        bioTextEl.addEventListener('blur', saveBio);
+
+        notificationBell.addEventListener('click', toggleNotificationPanel);
+        markAllReadBtn.addEventListener('click', readAllNotifications);
+        
+        shareProfileBtn.addEventListener('click', shareProfile);
+        
+        profileCard.addEventListener('mousemove', handleCardTilt);
+        profileCard.addEventListener('mouseleave', resetCardTilt);
+        
+        profilePic.addEventListener('dragover', (e) => { e.preventDefault(); uploadOverlay.classList.add('active'); });
+        profilePic.addEventListener('dragleave', () => uploadOverlay.classList.remove('active'));
+        profilePic.addEventListener('drop', handleImageDrop);
+        
+        languageSelect.addEventListener('change', switchLanguage);
+        
+        document.addEventListener('keyup', handleKonamiCode);
+        
+        queryAll('.media-item').forEach(item => {
+            item.addEventListener('click', () => openLightbox(item.querySelector('img').src));
+        });
+        
+        // Ripple effect for buttons
+        queryAll('.action-btn, .message-btn, .follow-btn').forEach(button => {
+            button.addEventListener('click', createRipple);
+        });
+    }
+
+    // --- 5. Core Functionalities ---
+
+    // Theme Switcher
+    function toggleTheme() {
+        const isDarkMode = themeToggle.checked;
+        document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+        localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+    }
+
+    // Follow/Unfollow
+    function handleFollow() {
+        followBtn.classList.add('loading');
+        followBtn.innerHTML = '<div class="loader"></div>';
+        
+        setTimeout(() => {
+            state.isFollowing = !state.isFollowing;
+            state.followers += state.isFollowing ? 1 : -1;
+            
+            updateFollowButton();
+            followersCountEl.textContent = state.followers;
+            localStorage.setItem('isFollowing', state.isFollowing);
+            localStorage.setItem('followers', state.followers);
+            
+            addNotification(state.isFollowing ? 'You started following Ousman.' : 'You unfollowed Ousman.');
+            updateTimeline(state.isFollowing ? 'You followed Ousman Sankareh' : 'You unfollowed Ousman Sankareh');
+
+        }, 1000);
+    }
+    
+    function updateFollowButton() {
+        followBtn.classList.remove('loading');
+        if (state.isFollowing) {
+            followBtn.textContent = translations[languageSelect.value].following;
+            followBtn.classList.add('follow');
+        } else {
+            followBtn.textContent = translations[languageSelect.value].follow;
+            followBtn.classList.remove('following');
+        }
+    }
+
+    // Typewriter Effect
+    function typewriterEffect(text, element) {
+        let i = 0;
+        element.innerHTML = "";
+        element.classList.remove('typing-done');
+        function type() {
+            if (i < text.length) {
+                element.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(type, 50);
+            } else {
+                element.classList.add('typing-done');
+            }
+        }
+        type();
+    }
+    
+    // Modals
+    function openModal(modal) {
+        document.body.classList.add('modal-open');
+        modal.classList.add('active');
+        if (modal === storyModal) {
+            modal.querySelector('video').play();
+        }
+    }
+
+    function closeModal(modal) {
+        document.body.classList.remove('modal-open');
+        modal.classList.remove('active');
+        if (modal === storyModal) {
+            modal.querySelector('video').pause();
+        }
+    }
+
+    // Tabs
+    function switchTab(e) {
+        const clickedTab = e.currentTarget;
+        const targetId = clickedTab.dataset.tab;
+
+        tabs.forEach(tab => tab.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+
+        clickedTab.classList.add('active');
+        getEl(targetId).classList.add('active');
+    }
+    
+    // Editable Bio
+    function toggleBioEdit() {
+        const isEditing = bioTextEl.contentEditable === 'true';
+        bioTextEl.contentEditable = !isEditing;
+        bioTextEl.focus();
+        this.innerHTML = isEditing ? 
+            `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>` : 
+            `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>`;
+        if (!isEditing) {
+             updateTimeline('Profile bio is being edited.');
+        } else {
+             updateTimeline('Profile bio updated.');
+        }
+    }
+    
+    function saveBio() {
+        if(bioTextEl.contentEditable === 'true') {
+            const newBio = bioTextEl.innerText;
+            localStorage.setItem('userBio', newBio);
+        }
+    }
+
+    // Notifications
+    function addInitialNotifications() {
+        addNotification("Welcome to Ousman's profile! 🎉");
+        setTimeout(() => addNotification("Don't forget to check out the media gallery."), 3000);
+    }
+
+    function addNotification(message) {
+        const li = document.createElement('li');
+        li.textContent = message;
+        notificationList.prepend(li);
+        
+        notificationDot.classList.add('active');
+        state.notifications.push({ el: li, timestamp: Date.now() });
+
+        setTimeout(() => {
+            li.style.opacity = '0';
+            setTimeout(() => li.remove(), 500);
+        }, 10000);
+    }
+    
+    function toggleNotificationPanel() {
+        notificationPanel.classList.toggle('active');
+    }
+    
+    function readAllNotifications() {
+        notificationList.innerHTML = '';
+        notificationDot.classList.remove('active');
+        state.notifications = [];
+    }
+
+    // Timers
+    function startTimers() {
+        // Session Timer
+        setInterval(() => {
+            const now = new Date();
+            const diff = now - state.sessionStartTime;
+            const minutes = String(Math.floor(diff / 60000)).padStart(2, '0');
+            const seconds = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+            sessionTimeEl.textContent = `${minutes}:${seconds}`;
+        }, 1000);
+        
+        // Local Time Clock
+        function updateLocalTime() {
+            localTimeEl.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        updateLocalTime();
+        setInterval(updateLocalTime, 1000 * 60);
+    }
+    
+    // 3D Card Tilt Effect
+    function handleCardTilt(e) {
+        const { left, top, width, height } = profileCard.getBoundingClientRect();
+        const x = e.clientX - left - width / 2;
+        const y = e.clientY - top - height / 2;
+        
+        const rotateX = (y / height) * -15; // Invert for natural feel
+        const rotateY = (x / width) * 15;
+        
+        profileCard.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+    }
+
+    function resetCardTilt() {
+        profileCard.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+    }
+
+    // Share Profile
+    function shareProfile() {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            const originalText = this.innerHTML;
+            this.innerHTML = 'Copied!';
+            setTimeout(() => { this.innerHTML = originalText; }, 2000);
+        });
+    }
+
+    // QR Code
+    function generateQRCode() {
+        const qrContainer = getEl('qrcode');
+        qrContainer.innerHTML = "";
+        new QRCode(qrContainer, {
+            text: window.location.href,
+            width: 128,
+            height: 128,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    }
+    
+    // Image Drop
+    function handleImageDrop(e) {
+        e.preventDefault();
+        uploadOverlay.classList.remove('active');
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                profilePic.src = e.target.result;
+                getEl('profile-pic-modal').querySelector('img').src = e.target.result;
+                updateTimeline('Profile picture updated.');
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+    
+    // Konami Code
+    function handleKonamiCode(e) {
+        if (e.key === state.konamiCode[state.konamiIndex]) {
+            state.konamiIndex++;
+            if (state.konamiIndex === state.konamiCode.length) {
+                const surprise = getEl('konami-surprise');
+                surprise.classList.add('activated');
+                setTimeout(() => {
+                    surprise.classList.remove('activated');
+                }, 3000);
+                state.konamiIndex = 0;
+            }
+        } else {
+            state.konamiIndex = 0;
+        }
+    }
+    
+    // Language Switcher
+    function switchLanguage() {
+        const lang = this.value;
+        localStorage.setItem('language', lang);
+        applyTranslations(lang);
+    }
+    
+    function applyTranslations(lang) {
+        const langPack = translations[lang];
+        document.querySelectorAll('[data-lang-key]').forEach(el => {
+            const key = el.dataset.langKey;
+            if (langPack[key]) {
+                if (el.placeholder) el.placeholder = langPack[key];
+                else el.textContent = langPack[key];
+            }
+        });
+        updateFollowButton(); // Re-translate follow button
+    }
+
+    // Media Lightbox
+    function openLightbox(src) {
+        getEl('lightbox-img').src = src;
+        openModal(lightboxModal);
+    }
+    
+    // Timeline Update
+    function updateTimeline(activity) {
+        const li = document.createElement('li');
+        const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        li.innerHTML = `<strong>${timestamp}:</strong> ${activity}`;
+        getEl('activity-timeline').prepend(li);
+    }
+    
+    // Count Up Animation
+    function countUp(element, target, duration = 1500) {
+        let start = 0;
+        const stepTime = Math.abs(Math.floor(duration / target));
+        const timer = setInterval(() => {
+            start += 1;
+            element.textContent = start;
+            if (start === target) {
+                clearInterval(timer);
+            }
+        }, stepTime);
+    }
+    
+    // Ripple Effect
+    function createRipple(event) {
+        const button = event.currentTarget;
+        const circle = document.createElement("span");
+        const diameter = Math.max(button.clientWidth, button.clientHeight);
+        const radius = diameter / 2;
+
+        const rect = button.getBoundingClientRect();
+        circle.style.width = circle.style.height = `${diameter}px`;
+        circle.style.left = `${event.clientX - rect.left - radius}px`;
+        circle.style.top = `${event.clientY - rect.top - radius}px`;
+        circle.classList.add("ripple");
+
+        // Use a pseudo-element for the ripple instead of appending
+        const ripple = button.querySelector(".ripple");
+        if (ripple) {
+            ripple.remove();
+        }
+        
+        button.appendChild(circle);
+    }
+
+
+    // --- 6. Load Settings from LocalStorage ---
+    function loadSettings() {
+        // Theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            themeToggle.checked = savedTheme === 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+
+        // Follow Status
+        const savedFollowing = localStorage.getItem('isFollowing');
+        const savedFollowers = localStorage.getItem('followers');
+        if (savedFollowing !== null) {
+            state.isFollowing = JSON.parse(savedFollowing);
+            state.followers = parseInt(savedFollowers) || 57;
+            updateFollowButton();
+            followersCountEl.textContent = state.followers;
+        }
+
+        // Bio
+        const savedBio = localStorage.getItem('userBio');
+        if (savedBio) {
+            bioTextEl.innerText = savedBio;
+        }
+        
+        // Language
+        const savedLang = localStorage.getItem('language') || 'en';
+        languageSelect.value = savedLang;
+        applyTranslations(savedLang);
+    }
+    
+    // --- Run Initializer ---
+    init();
+});
+
+    </script>
+</body>
+</html>
